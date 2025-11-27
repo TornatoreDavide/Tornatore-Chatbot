@@ -62,7 +62,7 @@ export const createSchoolChat = (pdfBase64?: string): Chat => {
   `;
 
   return ai.chats.create({
-    model: 'gemini-3-pro-preview',
+    model: 'gemini-2.5-flash',
     config: {
       systemInstruction,
       temperature: 0.7, 

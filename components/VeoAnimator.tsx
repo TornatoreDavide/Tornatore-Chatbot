@@ -1,6 +1,5 @@
-
-import React, { useState, useRef } from 'react';
-import { Film, Upload, Loader, Play, CheckCircle, AlertCircle, Settings } from 'lucide-react';
+import React, { useState } from 'react';
+import { Film, Upload, Loader, Play, AlertCircle, Settings } from 'lucide-react';
 import { generateVeoVideo } from '../services/geminiService';
 import { AspectRatio } from '../types';
 
@@ -25,13 +24,9 @@ export const VeoAnimator: React.FC<VeoAnimatorProps> = ({ isDarkMode }) => {
         setError('Please upload a valid image file.');
         return;
       }
-      
-      // Reset state
       setImageFile(file);
       setResultVideo(null);
       setError(null);
-
-      // Preview
       const reader = new FileReader();
       reader.onload = (ev) => setImagePreview(ev.target?.result as string);
       reader.readAsDataURL(file);
@@ -40,14 +35,11 @@ export const VeoAnimator: React.FC<VeoAnimatorProps> = ({ isDarkMode }) => {
 
   const handleGenerate = async () => {
     if (!imageFile) return;
-    
     setIsGenerating(true);
     setError(null);
     setResultVideo(null);
     setProgressMessage('Initializing Veo...');
-
     try {
-      // Convert image to base64
       const reader = new FileReader();
       const base64Promise = new Promise<string>((resolve, reject) => {
         reader.onload = () => resolve((reader.result as string).split(',')[1]);
@@ -55,18 +47,13 @@ export const VeoAnimator: React.FC<VeoAnimatorProps> = ({ isDarkMode }) => {
         reader.readAsDataURL(imageFile);
       });
       const base64 = await base64Promise;
-
-      setProgressMessage('Checking API permissions...');
-      
-      // Simulate steps for UX
-      setTimeout(() => setProgressMessage('Generating video frames... this takes about 1-2 minutes...'), 2000);
-
+      setProgressMessage('Checking permissions...');
+      setTimeout(() => setProgressMessage('Animating... this takes about 1-2 mins...'), 2000);
       const videoUrl = await generateVeoVideo(base64, prompt, aspectRatio);
-      
       setResultVideo(videoUrl);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Failed to generate video. Please check your API Key and try again.");
+      setError(err.message || "Failed to generate video.");
     } finally {
       setIsGenerating(false);
       setProgressMessage('');
@@ -74,119 +61,104 @@ export const VeoAnimator: React.FC<VeoAnimatorProps> = ({ isDarkMode }) => {
   };
 
   const handleApiKeyConfig = async () => {
-      try {
-          if (window.aistudio) {
-             await window.aistudio.openSelectKey();
-          } else {
-              alert("AI Studio environment not detected.");
-          }
-      } catch (e) {
-          console.error(e);
-          alert("Failed to open key selector.");
-      }
+      try { if (window.aistudio) await window.aistudio.openSelectKey(); } catch (e) { console.error(e); }
   }
 
   return (
-    <div className={`rounded-2xl shadow-sm border h-full overflow-y-auto p-6 transition-colors duration-300 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'}`}>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3 text-rose-500">
-          <div className={`p-2 rounded-lg ${isDarkMode ? 'bg-rose-900/30' : 'bg-rose-50'}`}>
+    <div className={`rounded-[2rem] shadow-2xl h-full overflow-y-auto p-8 backdrop-blur-xl border transition-all duration-500 ${isDarkMode ? 'bg-slate-900/40 border-slate-700/30 text-slate-100' : 'bg-white/40 border-white/50 text-slate-800'}`}>
+      
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-4">
+          <div className={`p-3 rounded-2xl shadow-lg transform rotate-3 ${isDarkMode ? 'bg-gradient-to-br from-rose-600 to-pink-600 text-white' : 'bg-white text-rose-500'}`}>
              <Film size={24} />
           </div>
-          <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`}>Veo Animator</h2>
+          <div>
+              <h2 className={`text-3xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Veo Animator</h2>
+              <p className={`text-sm ${isDarkMode ? 'text-rose-200' : 'text-rose-500'}`}>Bring images to life with AI</p>
+          </div>
         </div>
         <button 
             onClick={handleApiKeyConfig}
-            className={`text-xs flex items-center gap-1 border px-3 py-1.5 rounded-full transition-colors ${
+            className={`text-xs flex items-center gap-2 border px-4 py-2 rounded-full transition-all duration-300 font-medium ${
                 isDarkMode 
-                ? 'text-slate-400 hover:text-slate-200 border-slate-700 hover:bg-slate-800' 
-                : 'text-slate-500 hover:text-slate-700 border-slate-300 hover:bg-slate-50'
+                ? 'text-slate-300 border-slate-700 hover:bg-white/10' 
+                : 'text-slate-600 border-slate-300 hover:bg-white hover:shadow-sm'
             }`}
         >
-            <Settings size={12} /> Configure API Key
+            <Settings size={14} /> Configure API Key
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Input Section */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           
           {/* Image Dropzone */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>1. Upload Source Image</label>
-            <div className="relative group">
-              <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
-                  imagePreview 
-                  ? 'border-rose-600 bg-rose-900/20' 
-                  : (isDarkMode ? 'border-slate-600 hover:border-rose-600 hover:bg-slate-800' : 'border-slate-300 hover:border-rose-500 hover:bg-slate-50')
-              }`}>
+            <label className={`block text-xs font-bold uppercase tracking-wider mb-3 ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>1. Source Image</label>
+            <div className={`relative group border-2 border-dashed rounded-3xl p-1 transition-all duration-300 ${imagePreview ? 'border-rose-500' : (isDarkMode ? 'border-slate-700 hover:border-slate-500 hover:bg-white/5' : 'border-slate-300 hover:border-rose-300 hover:bg-rose-50/50')}`}>
+              <div className={`rounded-[20px] overflow-hidden ${isDarkMode ? 'bg-slate-900/50' : 'bg-white/50'}`}>
                 {imagePreview ? (
-                  <div className="relative h-48 flex items-center justify-center">
-                    <img src={imagePreview} alt="Preview" className="max-h-full max-w-full rounded-lg shadow-sm object-contain" />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
-                       <span className="text-white font-medium">Change Image</span>
+                  <div className="relative h-56 flex items-center justify-center">
+                    <img src={imagePreview} alt="Preview" className="max-h-full max-w-full object-contain" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                       <span className="text-white font-medium flex items-center gap-2"><Upload size={18} /> Change Image</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="py-8 flex flex-col items-center text-slate-500">
-                    <Upload size={48} className={`mb-3 ${isDarkMode ? 'text-slate-600' : 'text-slate-400'}`} />
-                    <p className="text-sm font-medium">Click to upload or drag and drop</p>
-                    <p className="text-xs mt-1">PNG or JPG recommended</p>
+                  <div className="h-56 flex flex-col items-center justify-center text-slate-500 gap-4">
+                    <div className={`p-4 rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-400'}`}>
+                        <Upload size={32} />
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm font-semibold">Click to upload</p>
+                        <p className="text-xs opacity-70">PNG or JPG</p>
+                    </div>
                   </div>
                 )}
-                <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageUpload} accept="image/*" disabled={isGenerating} />
+                <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={handleImageUpload} accept="image/*" disabled={isGenerating} />
               </div>
             </div>
           </div>
 
           {/* Prompt */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>2. Animation Prompt</label>
+            <label className={`block text-xs font-bold uppercase tracking-wider mb-3 ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>2. Prompt</label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               disabled={isGenerating}
-              placeholder="Describe how the image should move (e.g., 'The leaves rustle in the wind', 'Cinematic slow motion pan')..."
-              className={`w-full p-3 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 min-h-[100px] text-sm resize-none transition-all ${
+              placeholder="Describe the movement..."
+              className={`w-full p-4 border rounded-3xl focus:ring-2 focus:ring-rose-500 focus:border-transparent min-h-[120px] text-sm resize-none transition-all outline-none ${
                   isDarkMode 
-                  ? 'bg-slate-800 border-slate-700 text-slate-200 placeholder:text-slate-500' 
-                  : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white'
+                  ? 'bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:bg-slate-800' 
+                  : 'bg-white/50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white'
               }`}
             />
           </div>
 
           {/* Aspect Ratio */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>3. Output Format</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setAspectRatio(AspectRatio.LANDSCAPE)}
-                className={`p-3 rounded-xl border text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                  aspectRatio === AspectRatio.LANDSCAPE
-                    ? 'bg-rose-600 text-white border-rose-600 shadow-md'
-                    : (isDarkMode 
-                        ? 'bg-slate-800 text-slate-400 border-slate-700 hover:border-rose-700 hover:text-slate-200' 
-                        : 'bg-white text-slate-500 border-slate-200 hover:border-rose-400 hover:text-slate-700 hover:bg-slate-50')
-                }`}
-                disabled={isGenerating}
-              >
-                <div className="w-6 h-4 border-2 border-current rounded-sm"></div>
-                Landscape (16:9)
-              </button>
-              <button
-                onClick={() => setAspectRatio(AspectRatio.PORTRAIT)}
-                className={`p-3 rounded-xl border text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-                  aspectRatio === AspectRatio.PORTRAIT
-                    ? 'bg-rose-600 text-white border-rose-600 shadow-md'
-                    : (isDarkMode 
-                        ? 'bg-slate-800 text-slate-400 border-slate-700 hover:border-rose-700 hover:text-slate-200' 
-                        : 'bg-white text-slate-500 border-slate-200 hover:border-rose-400 hover:text-slate-700 hover:bg-slate-50')
-                }`}
-                disabled={isGenerating}
-              >
-                <div className="w-4 h-6 border-2 border-current rounded-sm"></div>
-                Portrait (9:16)
-              </button>
+            <label className={`block text-xs font-bold uppercase tracking-wider mb-3 ml-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>3. Format</label>
+            <div className="grid grid-cols-2 gap-4">
+              {[AspectRatio.LANDSCAPE, AspectRatio.PORTRAIT].map((ratio) => (
+                <button
+                  key={ratio}
+                  onClick={() => setAspectRatio(ratio)}
+                  className={`p-4 rounded-2xl border text-sm font-medium transition-all flex items-center justify-center gap-3 ${
+                    aspectRatio === ratio
+                      ? 'bg-gradient-to-r from-rose-600 to-pink-600 text-white border-transparent shadow-lg shadow-rose-500/30'
+                      : (isDarkMode 
+                          ? 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700' 
+                          : 'bg-white/50 text-slate-500 border-slate-200 hover:bg-white')
+                  }`}
+                  disabled={isGenerating}
+                >
+                  <div className={`border-2 border-current rounded-sm ${ratio === AspectRatio.LANDSCAPE ? 'w-6 h-4' : 'w-4 h-6'}`}></div>
+                  {ratio === AspectRatio.LANDSCAPE ? 'Landscape' : 'Portrait'}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -194,83 +166,49 @@ export const VeoAnimator: React.FC<VeoAnimatorProps> = ({ isDarkMode }) => {
           <button
             onClick={handleGenerate}
             disabled={!imageFile || isGenerating}
-            className="w-full p-4 bg-rose-600 hover:bg-rose-700 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold shadow-lg shadow-rose-900/50 transition-all flex items-center justify-center gap-2"
+            className={`w-full p-5 rounded-2xl font-bold shadow-xl transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3 ${
+                !imageFile || isGenerating
+                ? 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
+                : 'bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 hover:from-rose-500 hover:via-pink-500 hover:to-purple-500 text-white shadow-rose-500/25'
+            }`}
           >
-            {isGenerating ? (
-              <>
-                <Loader size={20} className="animate-spin" />
-                <span>Processing...</span>
-              </>
-            ) : (
-              <>
-                <Film size={20} />
-                <span>Generate Video</span>
-              </>
-            )}
+            {isGenerating ? <Loader size={24} className="animate-spin" /> : <Film size={24} />}
+            <span>{isGenerating ? 'Creating Magic...' : 'Generate Video'}</span>
           </button>
-
-          {isGenerating && (
-              <p className="text-center text-xs text-slate-500 animate-pulse">{progressMessage}</p>
-          )}
-
+          
+          {isGenerating && <p className="text-center text-xs text-rose-400 animate-pulse font-medium">{progressMessage}</p>}
+          
           {error && (
-            <div className="p-4 bg-red-900/20 text-red-300 rounded-xl flex items-start gap-3 text-sm border border-red-800">
-              <AlertCircle size={18} className="shrink-0 mt-0.5" />
-              <p>{error}</p>
+            <div className="p-4 bg-red-500/10 text-red-400 rounded-2xl flex items-start gap-3 text-sm border border-red-500/20">
+              <AlertCircle size={18} className="shrink-0 mt-0.5" /> <p>{error}</p>
             </div>
           )}
         </div>
 
         {/* Output Section */}
-        <div className={`rounded-2xl p-1 flex items-center justify-center min-h-[400px] relative overflow-hidden border transition-colors duration-300 ${
-            isDarkMode ? 'bg-black border-slate-800' : 'bg-slate-100 border-slate-300'
-        }`}>
+        <div className={`rounded-3xl p-1.5 flex items-center justify-center min-h-[400px] relative overflow-hidden shadow-inner ${isDarkMode ? 'bg-slate-950/50' : 'bg-slate-100/80'}`}>
+          <div className={`absolute inset-0 opacity-10 ${isDarkMode ? 'bg-[radial-gradient(#ffffff_1px,transparent_1px)]' : 'bg-[radial-gradient(#000000_1px,transparent_1px)]'} [background-size:16px_16px]`}></div>
+          
           {resultVideo ? (
-            <div className="relative w-full h-full flex flex-col items-center justify-center">
-              <video 
-                src={resultVideo} 
-                controls 
-                autoPlay 
-                loop 
-                className="max-w-full max-h-full rounded-xl shadow-2xl"
-              />
-              <a 
-                href={resultVideo} 
-                download 
-                className={`mt-4 text-sm underline flex items-center gap-1 ${isDarkMode ? 'text-white/80 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open in new tab
+            <div className="relative w-full h-full flex flex-col items-center justify-center p-4 z-10">
+              <video src={resultVideo} controls autoPlay loop className="w-full rounded-2xl shadow-2xl ring-1 ring-white/10" />
+              <a href={resultVideo} download className="mt-6 px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm font-medium transition-colors backdrop-blur-md" target="_blank" rel="noreferrer">
+                Open Fullscreen
               </a>
             </div>
           ) : (
-            <div className="text-center p-8">
-              {isGenerating ? (
-                <div className="flex flex-col items-center gap-4">
-                   <div className="relative w-16 h-16">
-                      <div className="absolute inset-0 border-4 border-rose-500/30 rounded-full"></div>
-                      <div className="absolute inset-0 border-4 border-rose-500 rounded-full border-t-transparent animate-spin"></div>
-                   </div>
-                   <p className="text-slate-400 text-sm font-medium">Creating magic...</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-slate-700">
-                  <Play size={48} className={`opacity-20 ${isDarkMode ? 'text-slate-500' : 'text-slate-800'}`} />
-                  <p className={`font-medium ${isDarkMode ? 'text-slate-600' : 'text-slate-400'}`}>Your masterpiece will appear here</p>
-                </div>
-              )}
+            <div className="text-center p-10 relative z-10">
+              <div className={`w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+                 <Play size={40} className={`ml-2 opacity-50 ${isDarkMode ? 'text-slate-600' : 'text-slate-300'}`} />
+              </div>
+              <p className={`font-medium text-lg ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Your masterpiece awaits</p>
             </div>
           )}
         </div>
       </div>
       
-      <div className={`mt-8 border-t pt-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-         <p className="text-xs text-slate-500 text-center">
-            Powered by <strong>Veo</strong>. Make sure you have enabled the API Key with valid billing settings in Google AI Studio.
-            <br/>
-            <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noreferrer" className="underline hover:text-slate-400">Billing Documentation</a>
-         </p>
+      <div className={`mt-10 pt-6 border-t text-center ${isDarkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
+         <p className="text-[10px] tracking-wide uppercase">Powered by Google Veo • AI Studio</p>
       </div>
     </div>
   );
