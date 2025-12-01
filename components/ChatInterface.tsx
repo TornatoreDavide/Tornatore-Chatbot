@@ -55,9 +55,6 @@ const LiteraryAvatar: React.FC<LiteraryAvatarProps> = ({ isDarkMode, isTalking }
   }, []);
 
   const currentQuote = LITERARY_QUOTES[quoteIndex];
-  const faceColor = isDarkMode ? '#4f46e5' : '#6366f1'; 
-  const bodyColor = isDarkMode ? '#312e81' : '#e0e7ff'; 
-  const eyeColor = isTalking ? '#ef4444' : (isDarkMode ? '#22d3ee' : '#0ea5e9');
 
   return (
     <div className={`hidden lg:flex flex-col w-80 ml-6 rounded-[2rem] overflow-hidden transition-all duration-500 shadow-2xl h-[650px] backdrop-blur-xl border ${isDarkMode ? 'bg-slate-900/40 border-slate-700/30' : 'bg-white/40 border-white/50'}`}>
@@ -65,57 +62,68 @@ const LiteraryAvatar: React.FC<LiteraryAvatarProps> = ({ isDarkMode, isTalking }
       <div className="relative flex-[2] w-full flex items-center justify-center overflow-hidden group">
          <div className={`absolute inset-0 opacity-40 transition-colors duration-700 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] ${isDarkMode ? 'from-indigo-900/50 via-transparent to-transparent' : 'from-indigo-300/50 via-transparent to-transparent'}`}></div>
          
-         <div className="relative z-10 transform scale-125 transition-transform duration-500 hover:scale-135 cursor-pointer">
-            {/* Robot Head */}
-            <div 
-              className="relative w-32 h-28 rounded-3xl border-4 border-slate-700/80 shadow-2xl transition-transform duration-300 backdrop-blur-sm"
-              style={{ 
-                backgroundColor: faceColor,
-                transform: isTalking ? 'scale(1.05)' : 'scale(1)',
-                animation: isTalking ? 'head-bop 0.5s infinite alternate ease-in-out' : 'float 4s infinite ease-in-out'
-              }}
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-black/20 to-white/20 pointer-events-none"></div>
-              
-              {/* Antenna */}
-              <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                 <div className="w-1 h-6 bg-slate-500"></div>
-                 <div className={`w-3 h-3 rounded-full shadow-[0_0_10px_currentColor] transition-colors ${isTalking ? 'bg-red-500 text-red-500 animate-pulse' : 'bg-yellow-400 text-yellow-400'}`}></div>
-              </div>
+         {/* PROFESSOR OWL AVATAR */}
+         <div className="relative z-10 transform scale-110 transition-transform duration-500 hover:scale-125 cursor-pointer">
+            <div className="relative animate-[float_4s_infinite_ease-in-out]">
+                
+                {/* Head */}
+                <div 
+                  className="relative w-40 h-36 rounded-[2.5rem] border-4 border-slate-800 shadow-2xl overflow-hidden z-20 transition-colors duration-300"
+                  style={{ backgroundColor: isDarkMode ? '#4338ca' : '#818cf8' }}
+                >
+                    {/* Ear Tufts */}
+                    <div className="absolute -top-3 -left-2 w-12 h-12 bg-inherit rounded-tl-3xl rotate-12 border-l-4 border-t-4 border-slate-800"></div>
+                    <div className="absolute -top-3 -right-2 w-12 h-12 bg-inherit rounded-tr-3xl -rotate-12 border-r-4 border-t-4 border-slate-800"></div>
 
-              {/* Ears */}
-              <div className="absolute top-8 -left-3 w-3 h-8 bg-slate-600 rounded-l-lg border-l border-t border-b border-slate-800"></div>
-              <div className="absolute top-8 -right-3 w-3 h-8 bg-slate-600 rounded-r-lg border-r border-t border-b border-slate-800"></div>
+                    {/* Face/Eye Mask */}
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 w-32 h-20 bg-white/20 rounded-full blur-md"></div>
 
-              {/* Face Content */}
-              <div className="absolute inset-2 bg-slate-900 rounded-2xl flex flex-col items-center justify-center gap-4 border border-slate-700/50 shadow-inner">
-                {/* Eyes Container */}
-                <div className="flex gap-6 mt-2">
-                   <div className="relative w-8 h-8 bg-black rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-700">
-                      <div className="w-full h-full rounded-full animate-[blink_4s_infinite]" style={{ backgroundColor: eyeColor, boxShadow: `0 0 10px ${eyeColor}` }}></div>
-                   </div>
-                   <div className="relative w-8 h-8 bg-black rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-700">
-                      <div className="w-full h-full rounded-full animate-[blink_4s_infinite]" style={{ backgroundColor: eyeColor, boxShadow: `0 0 10px ${eyeColor}`, animationDelay: '0.1s' }}></div>
-                   </div>
+                    {/* Eyes */}
+                    <div className="absolute top-10 left-0 w-full flex justify-center gap-3">
+                        <div className="relative w-12 h-12 bg-white rounded-full border-4 border-slate-800 flex items-center justify-center overflow-hidden shadow-inner">
+                            <div className="w-5 h-5 bg-slate-900 rounded-full animate-[blink_4s_infinite]">
+                                <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full opacity-70"></div>
+                            </div>
+                        </div>
+                        <div className="relative w-12 h-12 bg-white rounded-full border-4 border-slate-800 flex items-center justify-center overflow-hidden shadow-inner">
+                            <div className="w-5 h-5 bg-slate-900 rounded-full animate-[blink_4s_infinite]">
+                                <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full opacity-70"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Beak */}
+                    <div className="absolute top-24 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[10px] border-t-amber-400 drop-shadow-sm z-30"></div>
+
+                    {/* Glasses (Smart Look) */}
+                    <div className="absolute top-12 left-1/2 -translate-x-1/2 w-32 flex justify-center gap-3 pointer-events-none opacity-80">
+                         <div className="w-14 h-14 rounded-full border-[3px] border-slate-800"></div>
+                         <div className="w-14 h-14 rounded-full border-[3px] border-slate-800"></div>
+                         <div className="absolute top-6 left-1/2 -translate-x-1/2 w-4 h-1 bg-slate-800"></div>
+                    </div>
+
+                    {/* Talking Animation (Beak Movement) */}
+                    {isTalking && (
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-2 bg-slate-900/20 rounded-full animate-pulse"></div>
+                    )}
                 </div>
-                {/* Mouth */}
-                <div className="w-12 h-3 bg-slate-800 rounded-full flex items-center justify-center overflow-hidden">
-                   {isTalking ? (
-                     <div className="w-8 bg-white rounded-full animate-[speak-animation_0.2s_infinite_alternate]" style={{ height: '2px' }}></div>
-                   ) : (
-                     <div className="w-6 h-1 bg-slate-500 rounded-full"></div>
-                   )}
-                </div>
-              </div>
-            </div>
 
-            {/* Robot Neck & Body */}
-            <div className="w-12 h-6 bg-slate-700 mx-auto -mt-2 border-x-4 border-slate-800 relative z-0"></div>
-            <div 
-              className="w-40 h-12 rounded-t-[3rem] mx-auto -mt-1 border-t-4 border-slate-700 relative z-0 shadow-lg"
-              style={{ backgroundColor: bodyColor }}
-            >
-                <div className="absolute inset-0 rounded-t-[3rem] bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
+                {/* Body */}
+                <div 
+                  className="relative -mt-6 mx-auto w-32 h-24 rounded-[2.5rem] border-4 border-slate-800 shadow-xl z-10 flex justify-center overflow-hidden"
+                  style={{ backgroundColor: isDarkMode ? '#3730a3' : '#6366f1' }}
+                >
+                     <div className="absolute top-8 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+                     
+                     {/* Red Bowtie */}
+                     <div className="absolute top-8 w-4 h-4 bg-red-500 rotate-45 rounded-sm shadow-sm z-20"></div>
+                     <div className="absolute top-8 -ml-4 w-0 h-0 border-r-[10px] border-r-red-500 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent"></div>
+                     <div className="absolute top-8 ml-4 w-0 h-0 border-l-[10px] border-l-red-500 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent"></div>
+                </div>
+
+                {/* Wings */}
+                <div className={`absolute top-28 -left-8 w-12 h-20 rounded-l-[2rem] border-4 border-slate-800 origin-right transition-all duration-300 ${isTalking ? 'rotate-12 bg-indigo-500' : 'rotate-6 bg-indigo-700'}`}></div>
+                <div className={`absolute top-28 -right-8 w-12 h-20 rounded-r-[2rem] border-4 border-slate-800 origin-left transition-all duration-300 ${isTalking ? '-rotate-12 bg-indigo-500' : '-rotate-6 bg-indigo-700'}`}></div>
             </div>
          </div>
       </div>
@@ -141,8 +149,6 @@ const LiteraryAvatar: React.FC<LiteraryAvatarProps> = ({ isDarkMode, isTalking }
       <style>{`
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes blink { 0%, 48%, 52%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.1); } }
-        @keyframes speak-animation { 0% { height: 2px; width: 60%; opacity: 0.5; } 100% { height: 8px; width: 80%; opacity: 1; background-color: #4ade80; } }
-        @keyframes head-bop { 0% { transform: rotate(-2deg) scale(1.05); } 100% { transform: rotate(2deg) scale(1.05); } }
       `}</style>
     </div>
   );
